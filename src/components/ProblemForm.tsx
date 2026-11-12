@@ -122,6 +122,7 @@ export default function ProblemForm({
       open={open}
       onClose={onClose}
       title={initial ? 'Edit problem' : 'Add problem'}
+      subtitle="Everything is stored locally in IndexedDB"
       footer={
         <div className="flex gap-2">
           {initial && onDelete && (

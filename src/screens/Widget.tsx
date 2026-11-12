@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Flame, CheckCircle2, Timer, ArrowUpRight } from 'lucide-react'
+import { Flame, CheckCircle2, Timer, ArrowUpRight, Code2 } from 'lucide-react'
+import Logo from '../components/Logo'
 import { useStore, todayKey, useStreak } from '../store/useStore'
 import { problemStats, sessionTotals } from '../lib/calc'
 import { TOTAL_TARGET } from '../data/seed'
@@ -22,14 +23,14 @@ export default function Widget() {
 
   const cells = [
     {
-      icon: '☕',
+      icon: <Code2 size={13} className="text-java" />,
       label: 'Java DSA',
       value: ready ? `${stats.total}/${TOTAL_TARGET}` : '—',
       color: '#f89820',
       bar: ready ? pct(stats.total, TOTAL_TARGET) : 0,
     },
     {
-      icon: <Flame size={13} className="text-java" />,
+      icon: <Flame size={13} className="text-medium" />,
       label: 'Streak',
       value: ready ? `${streak.current} days` : '—',
       color: '#ffa500',
@@ -55,8 +56,8 @@ export default function Widget() {
     <div className="flex min-h-[70vh] flex-col justify-center py-6">
       <Link
         to="/"
-        className="group relative block overflow-hidden rounded-[28px] border border-white/[0.07] bg-surface p-4 shadow-card transition-transform active:scale-[0.985]"
-        style={{ background: 'linear-gradient(150deg,#1b2a4a 0%,#16213e 55%,#131c33 100%)' }}
+        className="group relative block overflow-hidden rounded-[26px] p-4 shadow-raised transition-transform active:scale-[0.985]"
+        style={{ background: 'linear-gradient(152deg,#22314f 0%,#16213e 52%,#121a2e 100%)', border: '1px solid rgba(255,255,255,0.08)' }}
       >
         <div
           className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-25 blur-2xl"
@@ -64,7 +65,7 @@ export default function Widget() {
         />
         <div className="relative flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="grid h-8 w-8 place-items-center rounded-xl bg-java/15 text-base">☕</span>
+            <Logo size={32} />
             <div>
               <p className="text-[12px] font-extrabold leading-none">JavaPrepTracker</p>
               <p className="mt-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">
@@ -102,7 +103,7 @@ export default function Widget() {
         <Link to="/dsa" className="btn-ghost text-[11.5px]">DSA</Link>
         <Link to="/stats" className="btn-ghost text-[11.5px]">Stats</Link>
       </div>
-      <p className="mt-3 text-center text-[10.5px] leading-relaxed text-muted/60">
+      <p className="mt-4 text-center text-[10px] leading-relaxed text-muted/55">
         Add <span className="font-mono text-muted">/widget</span> to your Android home screen
         <br />
         (Chrome → ⋮ → Add to Home screen) for a 2×2 view.

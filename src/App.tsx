@@ -47,16 +47,16 @@ export default function App({ onReady }: { onReady?: () => void }) {
     <SplashGate>
       <div className="mx-auto flex min-h-full w-full max-w-[520px] flex-col bg-base">
         <main
-          className="flex-1 px-4 pb-[calc(var(--nav-h)+var(--safe-bottom)+18px)] pt-[max(14px,var(--safe-top))]"
+          className="flex-1 px-4 pb-[calc(var(--nav-h)+var(--safe-bottom)+20px)]"
           key="main"
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.22, ease: [0.2, 0.9, 0.2, 1] }}
             >
               <Routes location={location}>
                 <Route path="/" element={<Home />} />

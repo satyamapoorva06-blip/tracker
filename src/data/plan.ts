@@ -176,11 +176,11 @@ export const CATEGORY_ORDER: TaskCategory[] = [
 ]
 
 export const CATEGORY_META: Record<TaskCategory, { icon: string; color: string }> = {
-  'Java DSA': { icon: '☕', color: '#f89820' },
-  'Java Theory': { icon: '📚', color: '#00d4aa' },
-  'CS Fundamentals': { icon: '📖', color: '#7c9bff' },
-  Development: { icon: '🔨', color: '#c084fc' },
-  Review: { icon: '📝', color: '#94a3b8' },
+  'Java DSA': { icon: 'Code2', color: '#f89820' },
+  'Java Theory': { icon: 'BookOpen', color: '#00d4aa' },
+  'CS Fundamentals': { icon: 'Library', color: '#7cc5ff' },
+  Development: { icon: 'Hammer', color: '#a78bfa' },
+  Review: { icon: 'NotebookPen', color: '#94a3b8' },
 }
 
 /** Builds the full "today" plan (24-ish tasks) for a given weekday. */

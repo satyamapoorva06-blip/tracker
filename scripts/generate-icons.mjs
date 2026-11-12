@@ -1,0 +1,81 @@
+import { createRequire } from 'module'
+import fs from 'fs'
+// Run from the repo root: `npm i -D sharp` then `node scripts/generate-icons.mjs`
+const require = createRequire(import.meta.url)
+const sharp = require('sharp')
+
+function mark({ radius = 0, scale = 1 } = {}) {
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.28" y2="1">
+      <stop offset="0%" stop-color="#2a3a62"/><stop offset="46%" stop-color="#1a2340"/><stop offset="100%" stop-color="#111120"/>
+    </linearGradient>
+    <radialGradient id="warm" cx="50%" cy="40%" r="54%">
+      <stop offset="0%" stop-color="#f89820" stop-opacity="0.20"/>
+      <stop offset="58%" stop-color="#f89820" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#f89820" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="body" x1="0.1" y1="0" x2="0.92" y2="0.9">
+      <stop offset="0%" stop-color="#ffcf80"/><stop offset="22%" stop-color="#fba63e"/>
+      <stop offset="56%" stop-color="#f89820"/><stop offset="86%" stop-color="#dd7c07"/><stop offset="100%" stop-color="#b45c02"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffe8c2"/><stop offset="55%" stop-color="#ffbe66"/><stop offset="100%" stop-color="#f59a24"/>
+    </linearGradient>
+    <linearGradient id="coffee" x1="0.2" y1="0" x2="0.4" y2="1">
+      <stop offset="0%" stop-color="#6f4114"/><stop offset="40%" stop-color="#3e2109"/><stop offset="100%" stop-color="#201003"/>
+    </linearGradient>
+    <linearGradient id="steam" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#00d4aa" stop-opacity="0.95"/>
+      <stop offset="52%" stop-color="#2fdfbd" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#2fdfbd" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="accentLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00d4aa" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#00d4aa" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#00d4aa" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" ${radius ? `rx="${radius}" ry="${radius}"` : ''} fill="url(#bg)"/>
+  <rect width="1024" height="1024" ${radius ? `rx="${radius}" ry="${radius}"` : ''} fill="url(#warm)"/>
+
+  <g transform="translate(512 ${512 + 104 * scale}) scale(${scale})">
+  <!-- steam -->
+  <g fill="none" stroke="url(#steam)" stroke-linecap="round">
+    <path d="M-104 -252 c 40 -46 -36 -80 6 -132" stroke-width="22"/>
+    <path d="M0 -268 c 40 -46 -36 -80 6 -132" stroke-width="22"/>
+    <path d="M104 -252 c 40 -46 -36 -80 6 -132" stroke-width="22"/>
+  </g>
+
+  <!-- handle: ring tucked into the body's right edge -->
+  <circle cx="150" cy="-16" r="86" fill="none" stroke="#c96f06" stroke-width="52"/>
+  <circle cx="150" cy="-16" r="86" fill="none" stroke="url(#rim)" stroke-width="34"/>
+  <circle cx="150" cy="-16" r="86" fill="none" stroke="#42230a" stroke-width="16" opacity="0.75"/>
+
+  <!-- cup body: tapered, rounded base -->
+  <path d="M-166 -132 H166 L150 108 Q146 168 88 168 H-88 Q-146 168 -150 108 Z" fill="url(#body)"/>
+  <!-- sheen + core shadow, clipped by path reuse -->
+  <path d="M-166 -132 H-104 L-112 150 Q-140 162 -150 108 Z" fill="#ffe8c2" opacity="0.28"/>
+  <path d="M112 -132 H166 L150 108 Q144 160 96 168 H56 Q112 156 118 104 Z" fill="#8f4602" opacity="0.22"/>
+  <ellipse cx="0" cy="150" rx="120" ry="26" fill="#8a4602" opacity="0.35"/>
+
+  <!-- rim -->
+  <ellipse cx="0" cy="-132" rx="166" ry="38" fill="url(#rim)"/>
+  <ellipse cx="0" cy="-128" rx="138" ry="28" fill="url(#coffee)"/>
+  <path d="M-138 -130 a138 28 0 0 0 276 0 a138 28 0 0 1 -276 0 z" fill="#8a5626" opacity="0.4"/>
+  <ellipse cx="-56" cy="-138" rx="52" ry="9" fill="#96602b" opacity="0.28"/>
+
+  </g>
+</svg>`
+}
+
+const out = new URL('../public', import.meta.url).pathname
+await sharp(Buffer.from(mark({ radius: 236, scale: 1.0 }))).resize(512, 512).png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(`${out}/icons/icon-512.png`)
+await sharp(Buffer.from(mark({ radius: 236, scale: 1.0 }))).resize(192, 192).png({ compressionLevel: 9 }).toFile(`${out}/icons/icon-192.png`)
+await sharp(Buffer.from(mark({ scale: 0.84 }))).resize(512, 512).png({ compressionLevel: 9 }).toFile(`${out}/icons/maskable-512.png`)
+await sharp(Buffer.from(mark({ scale: 0.84 }))).resize(192, 192).png({ compressionLevel: 9 }).toFile(`${out}/icons/maskable-192.png`)
+await sharp(Buffer.from(mark({ scale: 0.96 }))).resize(180, 180).png({ compressionLevel: 9 }).toFile(`${out}/icons/apple-touch-icon.png`)
+fs.writeFileSync(`${out}/favicon.svg`, mark({ radius: 236, scale: 1.0 }).trim())
+console.log('ok')

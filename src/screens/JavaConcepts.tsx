@@ -1,12 +1,16 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Circle, CircleDot, Copy, Coffee, Search, Sparkles, Trash2, Plus } from 'lucide-react'
+import {
+  Check, Circle, CircleDot, Copy, Search, Sparkles, Trash2, Plus, BookOpen, Code2, Zap,
+  ChevronRight,
+} from 'lucide-react'
 import clsx from 'clsx'
 import { useStore } from '../store/useStore'
-import { Card, ProgressBar, Ring, SectionTitle, Sheet, EmptyState } from '../components/ui/Primitives'
+import { Card, ProgressBar, Ring, SectionTitle, Sheet, EmptyState, Segmented } from '../components/ui/Primitives'
 import { TEMPLATES, CONCEPT_CATEGORY_LABELS, type Template } from '../data/seed'
 import type { ConceptCategory, ConceptStatus, JavaConcept } from '../types'
 import { pct } from '../lib/format'
+import AppBar from '../components/AppBar'
 
 const CATEGORY_ORDER: ConceptCategory[] = ['fundamentals', 'collections', 'java8']
 const CATEGORY_COLORS: Record<ConceptCategory, string> = {
@@ -88,74 +92,69 @@ export default function JavaConcepts() {
 
   return (
     <div className="space-y-4">
-      <header className="flex items-start justify-between px-1 pt-1">
-        <div>
-          <h1 className="text-[19px] font-extrabold leading-tight">Java Concepts</h1>
-          <p className="text-[11.5px] text-muted">Language mastery, separate from DSA</p>
-        </div>
-        <div className="grid h-10 w-10 place-items-center rounded-2xl bg-java/15 text-lg">☕</div>
-      </header>
+      <AppBar
+        eyebrow="Language mastery"
+        title="Java Concepts"
+        actions={
+          <span className="chip border border-java/25 bg-java/10 text-java">
+            {totalCompleted}/{concepts.length}
+          </span>
+        }
+      />
 
       {/* Overview */}
-      <Card className="flex items-center gap-4 p-4">
-        <Ring
-          value={totalCompleted}
-          max={Math.max(concepts.length, 1)}
-          size={104}
-          stroke={9}
-          color="#f89820"
-        >
-          <span className="text-[19px] font-extrabold leading-none text-java">
-            {pct(totalCompleted, Math.max(concepts.length, 1))}%
-          </span>
-          <span className="mt-0.5 text-[9px] font-semibold uppercase tracking-wider text-muted">mastered</span>
-        </Ring>
-        <div className="min-w-0 flex-1 space-y-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted">Concepts completed</span>
-            <span className="text-[12px] font-extrabold">
-              {totalCompleted}/{concepts.length}
+      <Card raised hairline className="overflow-hidden">
+        <div
+          className="pointer-events-none absolute -right-14 -top-16 h-40 w-40 rounded-full opacity-[0.16] blur-[40px]"
+          style={{ background: 'radial-gradient(circle,#f89820 0%,transparent 70%)' }}
+        />
+        <div className="relative flex items-center gap-4 p-4">
+          <Ring
+            value={totalCompleted}
+            max={Math.max(concepts.length, 1)}
+            size={96}
+            stroke={8.5}
+            color="#f89820"
+          >
+            <span className="metric text-[20px] text-java">
+              {pct(totalCompleted, Math.max(concepts.length, 1))}%
             </span>
-          </div>
-          <ProgressBar value={totalCompleted} max={Math.max(concepts.length, 1)} />
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-[11px] text-muted">In progress</span>
-            <span className="text-[12px] font-bold text-medium">{totalInProgress}</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-muted">Avg confidence</span>
-            <span className="text-[12px] font-bold text-java">{avgConfidence}/5</span>
+            <span className="mt-0.5 text-[8px] font-semibold uppercase tracking-[0.1em] text-muted">mastered</span>
+          </Ring>
+          <div className="min-w-0 flex-1">
+            <p className="metric text-[17px]">
+              {totalCompleted}
+              <span className="text-[12px] font-bold text-muted"> / {concepts.length} concepts</span>
+            </p>
+            <ProgressBar value={totalCompleted} max={Math.max(concepts.length, 1)} className="mt-2" gradient />
+            <div className="mt-2.5 grid grid-cols-2 gap-2">
+              <div className="inset-panel px-2 py-1.5">
+                <p className="text-[8.5px] font-semibold uppercase tracking-[0.08em] text-muted">In progress</p>
+                <p className="metric mt-0.5 text-[12px] text-medium">{totalInProgress}</p>
+              </div>
+              <div className="inset-panel px-2 py-1.5">
+                <p className="text-[8.5px] font-semibold uppercase tracking-[0.08em] text-muted">Confidence</p>
+                <p className="metric mt-0.5 text-[12px] text-java">{avgConfidence}<span className="text-[9px] font-bold text-muted">/5</span></p>
+              </div>
+            </div>
           </div>
         </div>
       </Card>
 
-      {/* Tabs */}
-      <div className="flex rounded-xl bg-white/[0.05] p-1">
-        {(['progress', 'templates'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={clsx(
-              'relative flex-1 rounded-lg py-2 text-[12px] font-bold capitalize transition-colors',
-              tab === t ? 'text-[#04231d]' : 'text-muted',
-            )}
-          >
-            {tab === t && (
-              <motion.span
-                layoutId="concept-tab"
-                className="absolute inset-0 rounded-lg bg-accent"
-                transition={{ type: 'spring', stiffness: 420, damping: 34 }}
-              />
-            )}
-            <span className="relative">{t === 'progress' ? 'Progress' : 'Templates'}</span>
-          </button>
-        ))}
-      </div>
+      <Segmented
+        options={[
+          { value: 'progress', label: 'Progress' },
+          { value: 'templates', label: 'Templates' },
+        ]}
+        value={tab}
+        onChange={setTab}
+        layoutId="concept-tab"
+      />
 
       <div className="relative">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
         <input
-          className="field pl-9"
+          className="field h-11 py-0 pl-9 text-[14px]"
           placeholder={tab === 'progress' ? 'Search concepts…' : 'Search templates…'}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -168,15 +167,25 @@ export default function JavaConcepts() {
             <Card key={group.cat} className="overflow-hidden">
               <div className="px-4 pt-3.5">
                 <div className="flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-[13.5px] font-extrabold">
+                  <h3 className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.08em]">
                     <span
-                      className="h-2 w-2 rounded-full"
-                      style={{ background: CATEGORY_COLORS[group.cat] }}
-                    />
+                      className="grid h-6 w-6 place-items-center rounded-md"
+                      style={{
+                        background: `${CATEGORY_COLORS[group.cat]}14`,
+                        color: CATEGORY_COLORS[group.cat],
+                        border: `1px solid ${CATEGORY_COLORS[group.cat]}26`,
+                      }}
+                    >
+                      {(() => {
+                        const Icon = group.cat === 'fundamentals' ? BookOpen : group.cat === 'collections' ? Code2 : Zap
+                        return <Icon size={12} strokeWidth={2.3} />
+                      })()}
+                    </span>
                     {CONCEPT_CATEGORY_LABELS[group.cat]}
                   </h3>
-                  <span className="text-[11px] font-bold" style={{ color: CATEGORY_COLORS[group.cat] }}>
-                    {group.completed}/{group.total}
+                  <span className="metric text-[11.5px]" style={{ color: CATEGORY_COLORS[group.cat] }}>
+                    {group.completed}
+                    <span className="font-semibold text-muted/70">/{group.total}</span>
                   </span>
                 </div>
                 <ProgressBar
@@ -231,25 +240,19 @@ export default function JavaConcepts() {
             </p>
           </div>
           {filteredTemplates.length === 0 && (
-            <EmptyState icon="🔍" title="No templates match" hint="Try 'hashmap', 'bfs', or 'binary'." />
+            <EmptyState icon={<Search size={18} />} title="No templates match" hint="Try 'hashmap', 'bfs', or 'binary'." />
           )}
           {filteredTemplates.map((t) => (
             <Card key={t.id} className="overflow-hidden">
               <button onClick={() => setOpenTemplate(t)} className="flex w-full items-center gap-3 px-3.5 py-3 text-left">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/[0.06] text-base">
-                  {t.icon}
+                <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-java/20 bg-java/[0.09] font-mono text-[11px] font-bold text-java">
+                  {t.title.slice(0, 2).toUpperCase()}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-bold">{t.title}</p>
                   <p className="truncate text-[10.5px] text-muted">{t.subtitle}</p>
                 </div>
-                <div className="flex shrink-0 gap-1">
-                  {t.tags.slice(0, 2).map((tag) => (
-                    <span key={tag} className="chip hidden bg-white/[0.06] text-muted min-[380px]:inline-flex">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                <ChevronRight size={15} className="shrink-0 text-muted/50" />
               </button>
             </Card>
           ))}

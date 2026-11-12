@@ -2,11 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────
+   Design tokens
+   The five brief-mandated colours (base #1a1a2e, surface #16213e,
+   accent #00d4aa, java #f89820, ink #e2e8f0) stay the anchors; the rest
+   is a small derived scale for depth, hairlines and text hierarchy.
+   ───────────────────────────────────────────────────────────────────── */
 :root {
   color-scheme: dark;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
-  --nav-h: 64px;
+  --nav-h: 66px;
+
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --surface-2: #1c2946;
+  --surface-3: #233254;
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.12);
+  --accent: #00d4aa;
+  --java: #f89820;
+  --ink: #e2e8f0;
+  --ink-dim: #c3cede;
+  --muted: #94a3b8;
+
+  --shadow-card: 0 16px 40px -28px rgba(0, 0, 0, 0.9);
+  --shadow-raised: 0 24px 60px -32px rgba(0, 0, 0, 0.95);
+  --highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.055);
 }
 
 @layer base {
@@ -24,6 +46,8 @@
     @apply bg-base text-ink font-sans antialiased;
     overscroll-behavior-y: none;
     text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
   }
 
   /* Prevent iOS auto-zoom on focus, keep inputs touch-friendly */
@@ -33,8 +57,12 @@
     font-size: 16px;
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     @apply font-semibold tracking-tight;
+    text-wrap: balance;
   }
 
   ::selection {
@@ -45,60 +73,166 @@
     width: 0;
     height: 0;
   }
+
+  :focus-visible {
+    outline: 2px solid rgba(0, 212, 170, 0.75);
+    outline-offset: 2px;
+  }
+
+  /* Tabular numerals for every metric in the product */
+  .tabular,
+  .metric,
+  [data-num] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
 }
 
 @layer components {
+  /* ── Surfaces ────────────────────────────────────────────────────── */
   .card {
-    @apply rounded-2xl bg-surface shadow-card border border-white/[0.04];
+    @apply relative rounded-2xl bg-surface text-left;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-card), var(--highlight);
+  }
+
+  .card-raised {
+    box-shadow: var(--shadow-raised), var(--highlight);
+  }
+
+  /* 1px gradient hairline on top edge — the "expensive" detail */
+  .hairline::before {
+    content: '';
+    position: absolute;
+    inset-inline: 14px;
+    top: 0;
+    height: 1px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+    pointer-events: none;
   }
 
   .card-pad {
     @apply p-4;
   }
 
+  .inset-panel {
+    @apply rounded-xl;
+    background: rgba(255, 255, 255, 0.032);
+    border: 1px solid rgba(255, 255, 255, 0.045);
+  }
+
+  /* ── App bar ─────────────────────────────────────────────────────── */
+  .appbar {
+    @apply sticky top-0 z-30 -mx-4 mb-1 px-4;
+    padding-top: max(14px, var(--safe-top));
+    padding-bottom: 10px;
+    background: linear-gradient(180deg, rgba(26, 26, 46, 0.97) 55%, rgba(26, 26, 46, 0.82) 100%);
+    backdrop-filter: blur(18px) saturate(150%);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+  }
+
+  .appbar-line {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09), transparent);
+  }
+
+  .eyebrow {
+    @apply text-2xs font-semibold uppercase tracking-caps text-muted;
+  }
+
+  .screen-title {
+    @apply text-[22px] font-extrabold leading-none tracking-tighter2 text-ink;
+  }
+
+  /* ── Controls ────────────────────────────────────────────────────── */
   .tap {
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center select-none;
   }
 
+  .icon-btn {
+    @apply tap h-11 w-11 shrink-0 rounded-xl text-muted transition-colors;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid var(--line);
+  }
+  .icon-btn:hover {
+    color: var(--ink);
+    background: rgba(255, 255, 255, 0.075);
+  }
+  .icon-btn:active {
+    transform: scale(0.96);
+  }
+
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 min-h-[44px] font-semibold text-sm
-      transition-transform active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 min-h-[44px] text-[13.5px] font-semibold
+      transition-[transform,background-color,filter] duration-150 active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100;
   }
 
   .btn-primary {
-    @apply btn bg-accent text-[#04231d] hover:brightness-110;
+    @apply btn text-[#04231d];
+    background: linear-gradient(180deg, #10e3b8 0%, #00d4aa 100%);
+    box-shadow: 0 10px 24px -14px rgba(0, 212, 170, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.06);
   }
 
   .btn-ghost {
-    @apply btn bg-white/[0.06] text-ink hover:bg-white/[0.1];
+    @apply btn text-ink;
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid var(--line);
+  }
+  .btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.09);
   }
 
   .btn-java {
-    @apply btn bg-java/15 text-java border border-java/30 hover:bg-java/25;
+    @apply btn text-java;
+    background: rgba(248, 152, 32, 0.12);
+    border: 1px solid rgba(248, 152, 32, 0.32);
+  }
+  .btn-java:hover {
+    background: rgba(248, 152, 32, 0.2);
   }
 
   .chip {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none;
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10.5px] font-semibold leading-none tracking-[0.01em];
+  }
+
+  .chip-soft {
+    @apply chip border border-white/[0.08] text-muted;
+    background: rgba(255, 255, 255, 0.045);
   }
 
   .field {
-    @apply w-full rounded-xl bg-white/[0.05] border border-white/[0.08] px-3.5 py-3 text-[15px]
-      text-ink placeholder:text-muted/70 outline-none
-      focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition;
+    @apply w-full rounded-xl px-3.5 py-3 text-[15px] text-ink outline-none transition
+      placeholder:text-muted/60;
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+  }
+  .field:focus {
+    border-color: rgba(0, 212, 170, 0.55);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.13);
+    background: rgba(255, 255, 255, 0.06);
   }
 
   .label {
-    @apply block text-[11px] font-semibold uppercase tracking-wider text-muted mb-1.5;
+    @apply mb-1.5 block text-[10.5px] font-semibold uppercase tracking-[0.11em] text-muted;
   }
 
   .divider {
-    @apply h-px w-full bg-white/[0.06];
+    @apply h-px w-full;
+    background: var(--line);
   }
 
   .glass-nav {
-    background: rgba(22, 33, 62, 0.86);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    background: rgba(20, 28, 51, 0.88);
+    backdrop-filter: blur(22px) saturate(160%);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    border-top: 1px solid var(--line);
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -110,23 +244,44 @@
   }
 
   .code-block {
-    @apply font-mono text-[12.5px] leading-relaxed bg-[#0d1425] rounded-xl p-3.5 overflow-x-auto
-      border border-white/[0.05] text-[#c9d6ea];
+    @apply overflow-x-auto rounded-xl p-3.5 font-mono text-[12px] leading-relaxed;
+    background: #0c1322;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: #cbd7e8;
+  }
+
+  /* Fine dotted texture used behind hero cards */
+  .grain {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+    background-size: 12px 12px;
+  }
+
+  .metric {
+    @apply font-extrabold leading-none tracking-tighter2;
+  }
+
+  /* Segmented control (tabs) */
+  .segment {
+    @apply relative z-10 flex-1 rounded-lg py-1.5 text-[12px] font-semibold transition-colors;
   }
 }
 
-/* Recharts tooltip polish */
+/* Recharts polish */
 .recharts-default-tooltip {
-  background: #16213e !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: #1c2946 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 12px !important;
-  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.8) !important;
+  box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.95) !important;
   font-size: 12px !important;
+  padding: 8px 10px !important;
 }
 .recharts-tooltip-label {
   color: #94a3b8 !important;
   font-weight: 600 !important;
   margin-bottom: 2px !important;
+}
+.recharts-surface {
+  overflow: visible;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -5,10 +5,11 @@ import {
   LineChart, Line, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid,
   PolarAngleAxis, PolarRadiusAxis, AreaChart, Area,
 } from 'recharts'
-import { Flame, TrendingUp, Award, Target, CalendarCheck2 } from 'lucide-react'
+import { Flame, TrendingUp, Award, Target, CalendarCheck2, Check } from 'lucide-react'
 import clsx from 'clsx'
 import { useStore, useStreak } from '../store/useStore'
 import { Card, ProgressBar, SectionTitle, Stat } from '../components/ui/Primitives'
+import AppBar from '../components/AppBar'
 import {
   last7Days, problemStats, problemsPerWeek, radarData, sessionTotals, taskCompletion,
   weakestPatterns, avgTimeTrend,
@@ -79,13 +80,10 @@ export default function Stats() {
 
   return (
     <div className="space-y-4">
-      <header className="px-1 pt-1">
-        <h1 className="text-[19px] font-extrabold leading-tight">Statistics</h1>
-        <p className="text-[11.5px] text-muted">Your preparation, measured</p>
-      </header>
+      <AppBar eyebrow={format(new Date(), 'MMMM yyyy')} title="Statistics" />
 
       {/* Headline */}
-      <div className="grid grid-cols-3 gap-2.5">
+      <div className="grid grid-cols-3 gap-2">
         <Card className="p-3">
           <Stat label="Problems" value={stats.total} hint={`of ${TOTAL_TARGET}`} color="#00d4aa" />
         </Card>
@@ -93,13 +91,13 @@ export default function Stats() {
           <Stat label="Study time" value={hm(totals.totalMinutes)} hint={`${sessions.length} sessions`} color="#f89820" />
         </Card>
         <Card className="p-3">
-          <Stat label="Completion" value={`${overall.percent}%`} hint={`${overall.done}/${overall.total} tasks`} color="#7c9bff" />
+          <Stat label="Completion" value={`${overall.percent}%`} hint={`${overall.done}/${overall.total} tasks`} color="#7cc5ff" />
         </Card>
       </div>
 
       {/* Weekly overview */}
       <div>
-        <SectionTitle title="This week" icon={<TrendingUp size={13} className="text-accent" />} />
+        <SectionTitle title="This week" icon={<TrendingUp size={12} className="text-accent" />} />
         <Card className="p-3.5">
           <div className="flex items-baseline justify-between">
             <p className="text-[11.5px] font-semibold text-muted">Study hours / day</p>
@@ -146,7 +144,7 @@ export default function Stats() {
 
       {/* Monthly heatmap */}
       <div>
-        <SectionTitle title="Monthly activity" icon={<CalendarCheck2 size={13} className="text-accent" />} />
+        <SectionTitle title="Monthly activity" icon={<CalendarCheck2 size={12} className="text-accent" />} />
         <Card className="p-3.5">
           <div className="flex items-center justify-between">
             <p className="text-[12px] font-bold">{format(new Date(), 'MMMM yyyy')}</p>
@@ -201,21 +199,21 @@ export default function Stats() {
 
       {/* Phase progress + milestones */}
       <div>
-        <SectionTitle title="Phase progress" icon={<Target size={13} className="text-java" />} />
-        <Card className="p-4">
+        <SectionTitle title="Phase progress" icon={<Target size={12} className="text-java" />} />
+        <Card raised className="p-4">
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[10.5px] font-semibold uppercase tracking-wider text-muted">Phase 2</p>
-              <p className="text-[17px] font-extrabold leading-tight">Java DSA Deep Dive</p>
+              <p className="text-[9.5px] font-bold uppercase tracking-caps text-muted">Phase 2</p>
+              <p className="mt-1 text-[16px] font-extrabold leading-none tracking-tighter2">Java DSA Deep Dive</p>
             </div>
-            <span className="text-[19px] font-extrabold text-accent">{phasePercent}%</span>
+            <span className="metric text-[22px] text-accent">{phasePercent}%</span>
           </div>
-          <ProgressBar value={phasePercent} max={100} height={8} className="mt-2.5" />
-          <p className="mt-1.5 text-[10.5px] text-muted">
-            {milestonesDone}/{milestoneState.length} milestones complete · Month {format(new Date(), 'M')} of 12
+          <ProgressBar value={phasePercent} max={100} height={6} className="mt-3" gradient />
+          <p className="mt-2 text-[10px] text-muted">
+            {milestonesDone} of {milestoneState.length} milestones · Month {format(new Date(), 'M')} of 12
           </p>
 
-          <div className="mt-3.5 space-y-1.5">
+          <div className="mt-3.5 space-y-0.5">
             {milestoneState.map((m) => (
               <button
                 key={m.label}
@@ -224,24 +222,26 @@ export default function Stats() {
                     updateSettings({ milestones: { ...settings.milestones, [m.label]: !settings.milestones[m.label] } })
                   }
                 }}
-                className="flex w-full items-center gap-2.5 rounded-lg px-1 py-1.5 text-left active:bg-white/[0.03]"
+                className="group flex w-full items-center gap-2.5 rounded-lg px-1 py-[7px] text-left transition-colors active:bg-white/[0.03]"
               >
                 <span
                   className={clsx(
-                    'grid h-5 w-5 shrink-0 place-items-center rounded-full text-[10px] font-bold',
-                    m.done ? 'bg-accent text-[#04231d]' : 'border border-white/15 text-muted',
+                    'grid h-[17px] w-[17px] shrink-0 place-items-center rounded-full border transition-colors',
+                    m.done
+                      ? 'border-accent bg-accent text-[#04231d]'
+                      : 'border-white/18 text-transparent',
                   )}
                 >
-                  {m.done ? '✓' : ''}
+                  <Check size={10} strokeWidth={3.6} />
                 </span>
-                <span className={clsx('min-w-0 flex-1 text-[12px]', m.done ? 'text-muted' : 'text-ink')}>
+                <span className={clsx('min-w-0 flex-1 text-[11.5px]', m.done ? 'text-muted' : 'font-medium text-ink')}>
                   {m.label}
                   {!m.done && m.progress > 0 && m.progress < 100 && (
-                    <span className="ml-1.5 text-[10px] font-semibold text-medium">{m.progress}%</span>
+                    <span className="ml-1.5 text-[9.5px] font-bold text-medium">{m.progress}%</span>
                   )}
                 </span>
                 {m.test === 'manual' && (
-                  <span className="text-[9px] font-semibold uppercase tracking-wide text-muted/60">tap</span>
+                  <span className="text-[8.5px] font-semibold uppercase tracking-[0.08em] text-muted/50">tap</span>
                 )}
               </button>
             ))}
@@ -251,7 +251,7 @@ export default function Stats() {
 
       {/* DSA analytics */}
       <div>
-        <SectionTitle title="Java DSA analytics" icon={<Award size={13} className="text-java" />} />
+        <SectionTitle title="Java DSA analytics" icon={<Award size={12} className="text-java" />} />
 
         <div className="grid grid-cols-2 gap-2.5">
           <Card className="p-2">
@@ -372,7 +372,7 @@ export default function Stats() {
 
       {/* Streak analytics */}
       <div>
-        <SectionTitle title="Streak analytics" icon={<Flame size={13} className="text-java" />} />
+        <SectionTitle title="Streak analytics" icon={<Flame size={12} className="text-java" />} />
         <Card className="p-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-gradient-to-br from-java/20 to-transparent p-3">

@@ -122,7 +122,7 @@ export default function TaskRow({
               e.stopPropagation()
               if (!moved.current) onToggle()
             }}
-            className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 transition-colors"
+            className="mt-0.5 grid h-[22px] w-[22px] shrink-0 place-items-center rounded-[7px] border-2 transition-colors"
             style={{
               borderColor: done ? '#00d4aa' : 'rgba(148,163,184,0.4)',
               background: done ? '#00d4aa' : 'transparent',
@@ -137,7 +137,7 @@ export default function TaskRow({
                   exit={{ scale: 0 }}
                   transition={{ type: 'spring', stiffness: 520, damping: 22 }}
                 >
-                  <Check size={15} strokeWidth={3.5} className="text-[#04231d]" />
+                  <Check size={13} strokeWidth={3.6} className="text-[#04231d]" />
                 </motion.span>
               )}
             </AnimatePresence>
@@ -156,17 +156,19 @@ export default function TaskRow({
               <span className="flex items-center gap-0.5">
                 <Clock size={9} /> {task.estimatedMinutes}m
               </span>
-              <span className="flex items-center gap-0.5" title={`${task.priority} priority`}>
-                {priority.dot} {task.priority}
+              <span className="flex items-center gap-1" title={`${task.priority} priority`}>
+                <i className="h-1.5 w-1.5 rounded-full" style={{ background: priority.color }} />
+                {task.priority}
               </span>
               <span
-                className="rounded px-1 py-[1px] font-mono font-semibold"
+                className="rounded px-1 py-[1.5px] font-mono text-[9px] font-semibold leading-none"
                 style={{
                   color: LANG_COLORS[task.language],
-                  background: `${LANG_COLORS[task.language]}18`,
+                  background: `${LANG_COLORS[task.language]}16`,
+                  border: `1px solid ${LANG_COLORS[task.language]}26`,
                 }}
               >
-                [{task.language}]
+                {task.language}
               </span>
               {task.repeat !== 'None' && (
                 <span className="flex items-center gap-0.5 text-accent/80">

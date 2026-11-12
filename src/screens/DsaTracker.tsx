@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   Search, Plus, SlidersHorizontal, ChevronDown, X, CalendarDays, Clock, Pencil,
-  Layers3, TrendingUp, Target,
+  Layers3, TrendingUp, Target, Flame, BarChart3,
 } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell,
@@ -10,7 +10,8 @@ import {
 } from 'recharts'
 import clsx from 'clsx'
 import { useStore } from '../store/useStore'
-import { Card, DiffBadge, EmptyState, ProgressBar, SectionTitle, Sheet, Tag } from '../components/ui/Primitives'
+import { Card, DiffBadge, EmptyState, ProgressBar, SectionTitle, Sheet, Tag, Stat } from '../components/ui/Primitives'
+import AppBar from '../components/AppBar'
 import ProblemForm from '../components/ProblemForm'
 import CheatSheetButton from '../components/CheatSheet'
 import { ALL_PATTERNS, ALL_COLLECTIONS, DIFFICULTY_COLORS, DIFFICULTY_TARGETS, TOTAL_TARGET } from '../data/seed'
@@ -80,96 +81,117 @@ export default function DsaTracker() {
 
   return (
     <div className="space-y-4">
-      <header className="flex items-center justify-between px-1 pt-1">
-        <div>
-          <h1 className="text-[19px] font-extrabold leading-tight">Java DSA Tracker</h1>
-          <p className="text-[11.5px] text-muted">Every problem, in Java, tracked</p>
-        </div>
-        <CheatSheetButton compact />
-      </header>
+      <AppBar
+        eyebrow="Track record"
+        title="Java DSA"
+        actions={<CheatSheetButton compact />}
+      />
 
       {/* Headline stat */}
-      <Card className="overflow-hidden p-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-[10.5px] font-semibold uppercase tracking-wider text-muted">Total solved in Java</p>
-            <p className="mt-0.5 text-[32px] font-extrabold leading-none tracking-tight">
-              {stats.total}
-              <span className="text-[15px] font-bold text-muted">/{TOTAL_TARGET}</span>
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="chip border border-accent/25 bg-accent/10 text-accent">
-              {pct(stats.total, TOTAL_TARGET)}% of target
+      <Card raised hairline className="overflow-hidden">
+        <div
+          className="pointer-events-none absolute -right-14 -top-16 h-44 w-44 rounded-full opacity-[0.18] blur-[42px]"
+          style={{ background: 'radial-gradient(circle,#f89820 0%,transparent 70%)' }}
+        />
+        <div className="relative p-4">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[9.5px] font-bold uppercase tracking-caps text-muted">Solved in Java</p>
+              <p className="metric mt-1.5 text-[36px]">
+                {stats.total}
+                <span className="text-[15px] font-bold text-muted">/{TOTAL_TARGET}</span>
+              </p>
             </div>
-            <p className="mt-1.5 text-[10.5px] text-muted">{TOTAL_TARGET - stats.total} to go</p>
+            <div className="flex flex-col items-end gap-1.5">
+              <span className="chip border border-accent/25 bg-accent/10 text-accent">
+                {pct(stats.total, TOTAL_TARGET)}% complete
+              </span>
+              <span className="text-[10px] text-muted">{TOTAL_TARGET - stats.total} problems to go</span>
+            </div>
           </div>
-        </div>
-        <ProgressBar value={stats.total} max={TOTAL_TARGET} height={8} className="mt-3" color="#f89820" />
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map((d) => (
-            <div key={d} className="rounded-xl bg-white/[0.04] p-2.5">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: DIFFICULTY_COLORS[d] }}>
-                  {d}
-                </span>
-                <span className="text-[11px] font-extrabold">
-                  {stats.byDiff[d]}<span className="font-semibold text-muted">/{DIFFICULTY_TARGETS[d]}</span>
-                </span>
+
+          <ProgressBar value={stats.total} max={TOTAL_TARGET} height={7} className="mt-3.5" color="#f89820" gradient />
+
+          <div className="mt-3.5 grid grid-cols-3 gap-2">
+            {(['Easy', 'Medium', 'Hard'] as Difficulty[]).map((d) => (
+              <div
+                key={d}
+                className="rounded-xl px-2.5 py-2"
+                style={{
+                  background: `${DIFFICULTY_COLORS[d]}0d`,
+                  border: `1px solid ${DIFFICULTY_COLORS[d]}26`,
+                }}
+              >
+                <div className="flex items-baseline justify-between">
+                  <span
+                    className="text-[9.5px] font-bold uppercase tracking-[0.08em]"
+                    style={{ color: DIFFICULTY_COLORS[d] }}
+                  >
+                    {d}
+                  </span>
+                  <span className="metric text-[12.5px]">
+                    {stats.byDiff[d]}
+                    <span className="font-semibold text-muted/80">/{DIFFICULTY_TARGETS[d]}</span>
+                  </span>
+                </div>
+                <ProgressBar
+                  value={stats.byDiff[d]}
+                  max={DIFFICULTY_TARGETS[d]}
+                  height={3}
+                  className="mt-1.5"
+                  color={DIFFICULTY_COLORS[d]}
+                />
               </div>
-              <ProgressBar
-                value={stats.byDiff[d]}
-                max={DIFFICULTY_TARGETS[d]}
-                height={4}
-                className="mt-1.5"
-                color={DIFFICULTY_COLORS[d]}
-              />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </Card>
 
       {/* Secondary stats */}
       <div className="grid grid-cols-2 gap-2.5">
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">
-            <Target size={11} /> Current pattern
-          </div>
-          <p className="mt-1 truncate text-[14px] font-extrabold text-java">
-            {stats.patternRows[0]?.pattern ?? '—'}
-          </p>
-          <p className="text-[10.5px] text-muted">{stats.patternRows[0]?.count ?? 0} solved</p>
+        <Card className="flex items-start justify-between gap-2 p-3">
+          <Stat
+            label="Top pattern"
+            value={<span className="text-java">{stats.patternRows[0]?.pattern ?? '—'}</span>}
+            hint={`${stats.patternRows[0]?.count ?? 0} solved`}
+          />
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-java/10 text-java">
+            <Target size={13} />
+          </span>
         </Card>
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">
-            <TrendingUp size={11} /> This week
-          </div>
-          <p className="mt-1 text-[14px] font-extrabold">{stats.weekCount} problems</p>
-          <p className="text-[10.5px] text-muted">{sessionCount} study blocks logged</p>
+        <Card className="flex items-start justify-between gap-2 p-3">
+          <Stat label="This week" value={`${stats.weekCount}`} hint={`${sessionCount} study blocks`} />
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+            <TrendingUp size={13} />
+          </span>
         </Card>
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">
-            <Clock size={11} /> Avg time / problem
-          </div>
-          <p className="mt-1 text-[14px] font-extrabold text-accent">{stats.avgTime} min</p>
-          <p className="text-[10.5px] text-muted">across {stats.total} solves</p>
+        <Card className="flex items-start justify-between gap-2 p-3">
+          <Stat label="Avg solve time" value={`${stats.avgTime}m`} hint={`across ${stats.total} solves`} color="#00d4aa" />
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-accent/10 text-accent">
+            <Clock size={13} />
+          </span>
         </Card>
-        <Card className="p-3">
-          <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted">
-            <Layers3 size={11} /> Need revision
-          </div>
-          <p className="mt-1 text-[14px] font-extrabold text-hard">{stats.revision.length}</p>
-          <p className="text-[10.5px] text-muted">flagged for a re-solve</p>
+        <Card className="flex items-start justify-between gap-2 p-3">
+          <Stat label="Need revision" value={`${stats.revision.length}`} hint="flagged for re-solve" color="#ff4757" />
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-hard/10 text-hard">
+            <Flame size={13} />
+          </span>
         </Card>
       </div>
 
       {/* Collections usage strip */}
       <Card className="p-3.5">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted">Collections used</p>
-        <div className="mt-1.5 flex flex-wrap gap-1.5">
+        <div className="flex items-center justify-between">
+          <p className="flex items-center gap-1.5 text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted">
+            <BarChart3 size={11} /> Collections used
+          </p>
+          <span className="text-[9.5px] text-muted/60">top {topCollections.length}</span>
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {topCollections.map((c) => (
-            <span key={c.name} className="chip border border-java/25 bg-java/10 font-mono text-java">
-              {c.name} ({c.count})
+            <span key={c.name} className="chip border border-java/22 bg-java/[0.08] font-mono text-[10px] text-java">
+              {c.name}
+              <span className="ml-0.5 rounded bg-java/15 px-1 py-0.5 font-sans text-[9px] font-bold">{c.count}</span>
             </span>
           ))}
           {topCollections.length === 0 && <span className="text-[11px] text-muted">No problems logged yet</span>}
@@ -177,12 +199,12 @@ export default function DsaTracker() {
       </Card>
 
       {/* Search + filter */}
-      <div className="sticky top-0 z-20 -mx-4 space-y-2 bg-base/95 px-4 pb-2 pt-1 backdrop-blur">
+      <div className="space-y-2">
         <div className="flex gap-2">
           <div className="relative flex-1">
-            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
             <input
-              className="field pl-9"
+              className="field h-11 py-0 pl-9 text-[14px]"
               placeholder="Search #, name, pattern…"
               value={query}
               onChange={(e) => { setQuery(e.target.value); setLimit(PAGE) }}
@@ -199,8 +221,10 @@ export default function DsaTracker() {
           </div>
           <button
             className={clsx(
-              'btn relative h-11 shrink-0 px-3',
-              activeFilters ? 'bg-accent/15 text-accent' : 'bg-white/[0.06] text-muted',
+              'relative h-11 w-11 shrink-0 rounded-xl border transition-colors',
+              activeFilters
+                ? 'border-accent/35 bg-accent/[0.12] text-accent'
+                : 'border-white/[0.09] bg-white/[0.045] text-muted',
             )}
             onClick={() => setFilterOpen(true)}
             aria-label="Filters"
@@ -219,10 +243,10 @@ export default function DsaTracker() {
               key={d}
               onClick={() => { setDifficulty(d); setLimit(PAGE) }}
               className={clsx(
-                'chip shrink-0 border px-3 py-1.5',
+                'chip shrink-0 border px-2.5 py-[6px] transition-colors',
                 difficulty === d
-                  ? 'border-transparent bg-white/[0.14] text-ink'
-                  : 'border-white/[0.06] bg-white/[0.03] text-muted',
+                  ? 'border-white/[0.16] bg-white/[0.12] text-ink'
+                  : 'border-white/[0.06] bg-white/[0.025] text-muted',
               )}
             >
               {d}
@@ -234,10 +258,10 @@ export default function DsaTracker() {
               key={s}
               onClick={() => setSort(s)}
               className={clsx(
-                'chip shrink-0 border px-3 py-1.5 capitalize',
+                'chip shrink-0 border px-2.5 py-[6px] capitalize transition-colors',
                 sort === s
-                  ? 'border-accent/30 bg-accent/10 text-accent'
-                  : 'border-white/[0.06] bg-white/[0.03] text-muted',
+                  ? 'border-accent/35 bg-accent/[0.11] text-accent'
+                  : 'border-white/[0.06] bg-white/[0.025] text-muted',
               )}
             >
               {s === 'time' ? 'time ↑' : s}
@@ -260,7 +284,7 @@ export default function DsaTracker() {
         />
         {filtered.length === 0 ? (
           <EmptyState
-            icon="🔍"
+            icon={<Search size={18} />}
             title="No problems match"
             hint="Try clearing filters, or log a new problem with the + button."
           />
@@ -272,15 +296,15 @@ export default function DsaTracker() {
                 <Card key={p.id} className="overflow-hidden">
                   <button
                     onClick={() => setExpanded(isOpen ? null : p.id!)}
-                    className="w-full px-3.5 py-3 text-left"
+                    className="w-full px-3.5 py-3 text-left transition-colors active:bg-white/[0.025]"
                   >
                     <div className="flex items-start gap-2.5">
-                      <span className="mt-0.5 shrink-0 font-mono text-[11px] font-bold text-muted">
-                        #{p.problemNumber}
+                      <span className="mt-0.5 shrink-0 rounded-md bg-white/[0.05] px-1.5 py-0.5 font-mono text-[10px] font-bold text-muted">
+                        {p.problemNumber}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13.5px] font-bold leading-snug">{p.problemName}</p>
-                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                        <p className="truncate text-[13px] font-bold leading-snug">{p.problemName}</p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1">
                           <DiffBadge d={p.difficulty} />
                           <Tag color="#7c9bff">{p.pattern}</Tag>
                           {p.status !== 'Solved' && (
@@ -292,7 +316,7 @@ export default function DsaTracker() {
                             {p.javaCollectionsUsed.join(', ')}
                           </p>
                         )}
-                        <div className="mt-1.5 flex items-center gap-2.5 text-[10.5px] text-muted">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] text-muted">
                           <span className="flex items-center gap-1">
                             <CalendarDays size={10} /> {dShort(p.solvedDate)}
                           </span>
@@ -320,13 +344,13 @@ export default function DsaTracker() {
                       >
                         <div className="border-t border-white/[0.06] px-3.5 py-3">
                           <div className="grid grid-cols-2 gap-2 text-[11px]">
-                            <div className="rounded-lg bg-white/[0.04] px-2.5 py-1.5">
-                              <span className="text-muted">Platform</span>
-                              <p className="font-semibold">{p.platform}</p>
+                            <div className="inset-panel px-2.5 py-1.5">
+                              <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted">Platform</span>
+                              <p className="font-semibold text-ink-dim">{p.platform}</p>
                             </div>
-                            <div className="rounded-lg bg-white/[0.04] px-2.5 py-1.5">
-                              <span className="text-muted">Approach</span>
-                              <p className="font-semibold">{p.approach}</p>
+                            <div className="inset-panel px-2.5 py-1.5">
+                              <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-muted">Approach</span>
+                              <p className="font-semibold text-ink-dim">{p.approach}</p>
                             </div>
                           </div>
                           <p className="mt-2.5 text-[12px] leading-relaxed text-ink/85">
@@ -334,13 +358,13 @@ export default function DsaTracker() {
                           </p>
                           <div className="mt-2.5 flex gap-2">
                             <button
-                              className="btn-ghost h-9 min-h-0 flex-1 text-[11.5px]"
+                              className="btn-ghost h-9 min-h-0 flex-1 text-[11px]"
                               onClick={() => { setEditing(p); setAddOpen(true) }}
                             >
                               <Pencil size={12} /> Edit
                             </button>
                             <button
-                              className="btn-ghost h-9 min-h-0 flex-1 text-[11.5px] text-accent"
+                              className="btn-ghost h-9 min-h-0 flex-1 text-[11px] text-accent"
                               onClick={() => updateProblem(p.id!, { status: 'Need Revision' })}
                             >
                               Mark for revision
@@ -368,7 +392,7 @@ export default function DsaTracker() {
           title="Pattern breakdown"
           action={
             <button
-              className="flex items-center gap-1 text-[11px] font-bold text-muted"
+              className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[10.5px] font-bold text-muted transition-colors hover:text-ink"
               onClick={() => setShowPatterns((v) => !v)}
             >
               {showPatterns ? 'Hide' : 'Show'}
@@ -425,7 +449,7 @@ export default function DsaTracker() {
           title="Java collections usage"
           action={
             <button
-              className="flex items-center gap-1 text-[11px] font-bold text-muted"
+              className="flex items-center gap-1 rounded-md px-1.5 py-1 text-[10.5px] font-bold text-muted transition-colors hover:text-ink"
               onClick={() => setShowCollections((v) => !v)}
             >
               {showCollections ? 'Hide' : 'Show'}

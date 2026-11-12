@@ -10,8 +10,8 @@ the first load.
 ### 🔗 Live app
 
 **https://javapreptracker.vercel.app** — open this on your Android phone, wait for the first
-load, then Chrome **⋮ → Add to Home screen**. The compact card lives at
-**https://javapreptracker.vercel.app/widget**.
+load, then Chrome **⋮ → Add to Home screen** (the installed icon is the ☕ tile with the accent
+steam). The compact card lives at **https://javapreptracker.vercel.app/widget**.
 
 ---
 
@@ -52,6 +52,26 @@ JSON export/import backups, and a "Reset to demo data" action.
 | Java orange | `#f89820` |
 | Easy / Medium / Hard | `#00d4aa` / `#ffa500` / `#ff4757` |
 | Text / muted | `#e2e8f0` / `#94a3b8` |
+
+---
+
+## 🎨 Design system
+
+The UI is built on a small, documented token layer so every screen shares one rhythm.
+
+| Layer | Tokens |
+| --- | --- |
+| **Palette** (mandated) | base `#1a1a2e` · card `#16213e` · accent `#00d4aa` · Java `#f89820` · Easy `#00d4aa` / Medium `#ffa500` / Hard `#ff4757` · ink `#e2e8f0` · muted `#94a3b8` |
+| **Derived elevation** | `surface2` `#1c2946`, `surface3` `#233254`, hairline `rgba(255,255,255,.07)`, violet `#a78bfa`, sky `#7cc5ff` |
+| **Type scale** | screen title 22/800 · KPI numbers 17–40 with tabular numerals (`font-feature-settings:"tnum"`) · body 12.5–13.5 · labels 9.5–11 uppercase at `0.14em` |
+| **Surfaces** | `.card` (1px hairline + inset top highlight + soft drop shadow) · `.card-raised` for hero blocks · `.inset-panel` for nested data · `.hairline` gradient edge |
+| **Controls** | 44px minimum tap targets everywhere, `.icon-btn` square action, `.btn-primary` (accent gradient + glow), `.btn-ghost`, `.btn-java`, `.field` focus ring, `.segment` animated tab control |
+| **Motion** | Framer Motion page cross-fade (220ms), spring bottom-sheet, layout-animated nav indicator and tab pill, one-shot `prefers-reduced-motion` guard |
+
+Components live in `src/components/ui/Primitives.tsx` (`Card`, `SectionTitle`, `Ring`,
+`ProgressBar`, `Segmented`, `Sheet`, `DiffBadge`, `Tag`, `KpiTile`, `Stat`, `EmptyState`) plus
+`AppBar` and `Logo`. The app icon, splash mark and in-app logo all come from one SVG glyph —
+regenerate the PNG set with `node scripts/generate-icons.mjs` (needs `sharp`).
 
 ---
 

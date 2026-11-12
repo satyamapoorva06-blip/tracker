@@ -23,7 +23,7 @@ export function mmss(total: number): string {
 export const pct = (a: number, b: number) => (b <= 0 ? 0 : Math.round((a / b) * 100))
 
 export const priorityMeta: Record<string, { dot: string; label: string; color: string }> = {
-  High: { dot: '🔴', label: 'High', color: '#ff4757' },
-  Medium: { dot: '🟡', label: 'Medium', color: '#ffa500' },
-  Low: { dot: '🟢', label: 'Low', color: '#00d4aa' },
+  High: { dot: '●', label: 'High', color: '#ff4757' },
+  Medium: { dot: '●', label: 'Medium', color: '#ffa500' },
+  Low: { dot: '●', label: 'Low', color: '#00d4aa' },
 }

@@ -171,7 +171,7 @@ export default function CheatSheetButton({ compact = false }: { compact?: boolea
       {compact ? (
         <button
           onClick={() => setOpen(true)}
-          className="tap rounded-xl bg-white/[0.06] px-3 text-muted hover:text-ink"
+          className="icon-btn"
           aria-label="Java quick reference"
         >
           <BookMarked size={16} />

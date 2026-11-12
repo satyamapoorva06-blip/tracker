@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Logo from './Logo'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Download, X } from 'lucide-react'
 import { useStore } from '../store/useStore'
@@ -73,8 +74,9 @@ export default function InstallPrompt() {
           transition={{ type: 'spring', stiffness: 320, damping: 30 }}
           className="fixed inset-x-0 bottom-[calc(var(--nav-h)+var(--safe-bottom)+10px)] z-[65] mx-auto w-[calc(100%-24px)] max-w-[480px]"
         >
-          <div className="flex items-center gap-3 rounded-2xl border border-accent/25 bg-surface2/97 p-3 shadow-card backdrop-blur">
-            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-java/15 text-xl">☕</div>
+          <div className="flex items-center gap-3 rounded-2xl p-3 shadow-menu backdrop-blur-xl"
+            style={{ background: 'rgba(28,41,70,0.96)', border: '1px solid rgba(0,212,170,0.28)' }}>
+            <Logo size={42} className="shrink-0" />
             <div className="min-w-0 flex-1">
               <p className="text-[13px] font-bold leading-tight">Install JavaPrepTracker</p>
               <p className="mt-0.5 text-[11px] leading-snug text-muted">

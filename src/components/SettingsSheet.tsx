@@ -19,7 +19,8 @@ function Toggle({
   return (
     <button
       onClick={() => onChange(!on)}
-      className="flex w-full items-center gap-3 rounded-xl bg-white/[0.04] px-3 py-2.5 text-left active:bg-white/[0.07]"
+      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors active:bg-white/[0.06]"
+      style={{ background: 'rgba(255,255,255,0.032)', border: '1px solid rgba(255,255,255,0.045)' }}
     >
       <span className="text-muted">{icon}</span>
       <span className="min-w-0 flex-1">
@@ -62,9 +63,11 @@ export default function SettingsSheet({ open, onClose }: { open: boolean; onClos
   }
 
   return (
-    <Sheet open={open} onClose={onClose} title="Settings & data">
+    <Sheet open={open} onClose={onClose} title="Settings" subtitle="Preferences, timer and local data">
       <div className="space-y-3">
-        <p className="label mb-0">Experience</p>
+        <p className="label mb-0 flex items-center gap-1.5">
+          <i className="h-1 w-1 rounded-full bg-accent" /> Experience
+        </p>
         <Toggle
           on={settings.haptics}
           onChange={(v) => updateSettings({ haptics: v })}
@@ -81,7 +84,9 @@ export default function SettingsSheet({ open, onClose }: { open: boolean; onClos
         />
 
         <div className="divider my-1" />
-        <p className="label mb-0">Pomodoro</p>
+        <p className="label mb-0 flex items-center gap-1.5">
+          <i className="h-1 w-1 rounded-full bg-java" /> Pomodoro
+        </p>
         <div className="grid grid-cols-2 gap-2">
           <div>
             <label className="label">Focus (min)</label>
@@ -104,7 +109,9 @@ export default function SettingsSheet({ open, onClose }: { open: boolean; onClos
         </div>
 
         <div className="divider my-1" />
-        <p className="label mb-0">Data — stored only on this device</p>
+        <p className="label mb-0 flex items-center gap-1.5">
+          <i className="h-1 w-1 rounded-full bg-sky" /> Data · on this device only
+        </p>
         <div className="grid grid-cols-2 gap-2">
           <button className="btn-ghost text-[12px]" onClick={doExport}>
             <Download size={14} /> Export JSON
@@ -145,7 +152,7 @@ export default function SettingsSheet({ open, onClose }: { open: boolean; onClos
           <RefreshCw size={14} /> {confirmReset ? 'Tap again to confirm reset' : 'Reset to demo data'}
         </button>
 
-        <div className="mt-2 flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] p-3">
+        <div className="mt-2 flex items-start gap-2 rounded-xl border border-white/[0.055] bg-white/[0.025] p-3">
           <Info size={14} className="mt-0.5 shrink-0 text-muted" />
           <p className="text-[10.5px] leading-relaxed text-muted">
             JavaPrepTracker keeps everything in IndexedDB on this device. No account, no server, no

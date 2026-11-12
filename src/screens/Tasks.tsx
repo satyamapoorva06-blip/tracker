@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react'
 import { format, addDays } from 'date-fns'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
-  ChevronDown, Plus, Timer, Play, Pause, RotateCcw, Wand2, Trash2, Coffee, CalendarDays,
+  ChevronDown, Plus, Timer, Play, Pause, RotateCcw, Wand2, Trash2, CalendarDays,
+  Code2, BookOpen, Library, Hammer, NotebookPen, Coffee, type LucideIcon,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useStore, todayKey } from '../store/useStore'
@@ -14,6 +15,15 @@ import { hm, mmss, pct } from '../lib/format'
 import { sessionTotals } from '../lib/calc'
 import type { SessionType, Task, TaskCategory } from '../types'
 import CheatSheetButton from '../components/CheatSheet'
+import AppBar from '../components/AppBar'
+
+const CATEGORY_ICON: Record<string, LucideIcon> = {
+  Code2,
+  BookOpen,
+  Library,
+  Hammer,
+  NotebookPen,
+}
 
 const TIMER_TYPES: { type: SessionType; label: string }[] = [
   { type: 'java_dsa', label: 'Java DSA' },
@@ -99,75 +109,92 @@ export default function Tasks() {
 
   return (
     <div className="space-y-4">
-      <header className="flex items-start justify-between px-1 pt-1">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">
-            {format(new Date(), 'EEEE, d MMMM')}
-          </p>
-          <h1 className="text-[19px] font-extrabold leading-tight">Daily Tasks</h1>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <CheatSheetButton compact />
-          <button
-            onClick={() => setTimerOpen(true)}
-            className={clsx(
-              'tap rounded-xl px-3',
-              timer.running ? 'bg-accent/15 text-accent' : 'bg-white/[0.06] text-muted',
-            )}
-            aria-label="Study timer"
-          >
-            <Timer size={17} />
-          </button>
-        </div>
-      </header>
+      <AppBar
+        eyebrow={format(new Date(), 'EEEE, d MMMM')}
+        title="Daily tasks"
+        actions={
+          <>
+            <CheatSheetButton compact />
+            <button
+              onClick={() => setTimerOpen(true)}
+              className={clsx('icon-btn relative', timer.running && 'border-accent/35 bg-accent/[0.12] text-accent')}
+              aria-label="Study timer"
+            >
+              <Timer size={16} />
+              {timer.running && (
+                <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-accent" />
+              )}
+            </button>
+          </>
+        }
+      />
 
-      {/* Breadcrumb + progress */}
-      <Card className="p-4">
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar text-[10.5px] font-bold uppercase tracking-wide">
-          {[
-            `Phase ${roadmap.phase}`,
-            `Month ${roadmap.month}`,
-            `Week ${roadmap.week}`,
-            `Day ${roadmap.day}`,
-          ].map((seg, i) => (
-            <span key={seg} className="flex shrink-0 items-center gap-1">
-              {i > 0 && <span className="text-muted/40">→</span>}
-              <span className={i === 3 ? 'text-java' : 'text-muted'}>{seg}</span>
-            </span>
-          ))}
-        </div>
-        <div className="mt-3 flex items-center gap-4">
-          <Ring value={done} max={Math.max(dayTasks.length, 1)} size={84} stroke={8} color={allDone ? '#f89820' : '#00d4aa'}>
-            <span className="text-[15px] font-extrabold leading-none">{pct(done, Math.max(dayTasks.length, 1))}%</span>
-          </Ring>
-          <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-extrabold leading-tight">
-              {done}/{dayTasks.length} tasks done
-            </p>
-            <p className="mt-0.5 text-[11px] text-muted">
-              {hm(totalMinutes)} planned · {hm(studied.todayMinutes)} studied today
-            </p>
-            <ProgressBar value={done} max={Math.max(dayTasks.length, 1)} className="mt-2" />
-            <div className="mt-2 flex items-center gap-1 text-[10.5px] text-muted">
-              <CalendarDays size={10} />
-              {roadmap.phaseTitle}
+      {/* Roadmap + day progress */}
+      <Card raised hairline className="overflow-hidden">
+        <div className="p-4">
+          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
+            {[`Phase ${roadmap.phase}`, `Month ${roadmap.month}`, `Week ${roadmap.week}`, `Day ${roadmap.day}`].map(
+              (seg, i, arr) => (
+                <span key={seg} className="flex shrink-0 items-center gap-1">
+                  <span
+                    className={clsx(
+                      'rounded-md px-1.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.08em]',
+                      i === arr.length - 1
+                        ? 'bg-java/[0.14] text-java'
+                        : 'bg-white/[0.045] text-muted',
+                    )}
+                  >
+                    {seg}
+                  </span>
+                  {i < arr.length - 1 && <span className="text-[9px] text-muted/35">›</span>}
+                </span>
+              ),
+            )}
+          </div>
+
+          <div className="mt-3.5 flex items-center gap-4">
+            <Ring
+              value={done}
+              max={Math.max(dayTasks.length, 1)}
+              size={88}
+              stroke={8}
+              color={allDone ? '#f89820' : '#00d4aa'}
+            >
+              <span className="metric text-[17px]">{pct(done, Math.max(dayTasks.length, 1))}%</span>
+            </Ring>
+            <div className="min-w-0 flex-1">
+              <p className="text-[17px] font-extrabold leading-none tracking-tighter2">
+                {done}
+                <span className="text-[13px] font-semibold text-muted"> / {dayTasks.length} done</span>
+              </p>
+              <p className="mt-1.5 text-[11px] text-muted">
+                <span className="font-bold text-ink-dim">{hm(totalMinutes)}</span> planned
+                <span className="mx-1.5 text-muted/30">·</span>
+                <span className="font-bold text-ink-dim">{hm(studied.todayMinutes)}</span> studied
+              </p>
+              <ProgressBar value={done} max={Math.max(dayTasks.length, 1)} className="mt-2" gradient />
+              <p className="mt-1.5 flex items-center gap-1 truncate text-[10px] text-muted/85">
+                <CalendarDays size={10} /> {roadmap.phaseTitle}
+              </p>
             </div>
           </div>
-        </div>
-        <div className="mt-3 flex gap-2">
-          <button className="btn-java h-10 min-h-0 flex-1 text-[12px]" onClick={() => setPlanConfirm(true)}>
-            <Wand2 size={14} /> Load today&apos;s Java plan
-          </button>
-          <button
-            className="btn-ghost h-10 min-h-0 px-3 text-[12px]"
-            onClick={() => {
-              setDefaultCategory('Java DSA')
-              setEditing(null)
-              setAddOpen(true)
-            }}
-          >
-            <Plus size={14} />
-          </button>
+
+          <div className="mt-3.5 flex gap-2">
+            <button className="btn-java h-10 min-h-0 flex-1 text-[12px]" onClick={() => setPlanConfirm(true)}>
+              <Wand2 size={13.5} /> Load today&apos;s Java plan
+            </button>
+            <button
+              className="btn-ghost h-10 min-h-0 w-10 px-0"
+              aria-label="Add task"
+              onClick={() => {
+                setDefaultCategory('Java DSA')
+                setEditing(null)
+                setAddOpen(true)
+              }}
+            >
+              <Plus size={15} />
+            </button>
+          </div>
         </div>
       </Card>
 
@@ -238,13 +265,21 @@ export default function Tasks() {
             <Card key={cat} className="overflow-hidden">
               <button
                 onClick={() => setOpen((o) => ({ ...o, [cat]: !o[cat] }))}
-                className="flex w-full items-center gap-2.5 px-3.5 py-3 text-left"
+                className="flex w-full items-center gap-2.5 px-3.5 py-3 text-left transition-colors active:bg-white/[0.02]"
               >
-                <span className="text-[15px]">{meta.icon}</span>
+                <span
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-lg"
+                  style={{ background: `${meta.color}14`, color: meta.color, border: `1px solid ${meta.color}26` }}
+                >
+                  {(() => {
+                    const Icon = CATEGORY_ICON[meta.icon] ?? Code2
+                    return <Icon size={14.5} strokeWidth={2.2} />
+                  })()}
+                </span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11.5px] font-extrabold uppercase tracking-wide">{cat}</span>
-                    <span className="text-[10px] font-semibold text-muted">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-ink-dim">{cat}</span>
+                    <span className="text-[9.5px] font-semibold text-muted tabular">
                       {catDone}/{items.length}
                     </span>
                   </div>

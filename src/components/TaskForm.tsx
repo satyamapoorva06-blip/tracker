@@ -78,6 +78,7 @@ export default function TaskForm({
       open={open}
       onClose={onClose}
       title={initial ? 'Edit task' : 'Add task'}
+      subtitle={initial ? 'Long-press any task to edit it quickly' : 'Saved to today by default'}
       footer={
         <div className="flex gap-2">
           {initial && onDelete && (
@@ -128,11 +129,11 @@ export default function TaskForm({
                 key={l}
                 onClick={() => setLanguage(l)}
                 className={clsx(
-                  'rounded-xl border px-3 py-2 text-[12px] font-semibold',
+                  'rounded-lg border px-2.5 py-2 font-mono text-[11px] font-semibold transition-colors',
                   language === l ? 'border-accent/45 bg-accent/12 text-accent' : 'border-white/[0.08] bg-white/[0.04] text-muted',
                 )}
               >
-                [{l}]
+                {l}
               </button>
             ))}
           </div>
@@ -161,11 +162,15 @@ export default function TaskForm({
                 key={p}
                 onClick={() => setPriority(p)}
                 className={clsx(
-                  'flex-1 rounded-xl border py-2.5 text-[12px] font-semibold',
+                  'flex flex-1 items-center justify-center gap-1.5 rounded-xl border py-2.5 text-[12px] font-semibold transition-colors',
                   priority === p ? 'border-white/25 bg-white/[0.12] text-ink' : 'border-white/[0.08] bg-white/[0.04] text-muted',
                 )}
               >
-                {p === 'High' ? '🔴' : p === 'Medium' ? '🟡' : '🟢'} {p}
+                <i
+                  className="h-1.5 w-1.5 rounded-full"
+                  style={{ background: p === 'High' ? '#ff4757' : p === 'Medium' ? '#ffa500' : '#00d4aa' }}
+                />
+                {p}
               </button>
             ))}
           </div>

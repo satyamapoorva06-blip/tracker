@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useStore } from '../store/useStore'
+import Logo from './Logo'
 
 /**
  * In-app splash, shown while IndexedDB seeds on the very first launch.
@@ -29,15 +30,14 @@ export default function SplashGate({ children }: { children: ReactNode }) {
             transition={{ duration: 0.3 }}
           >
             <motion.div
-              className="text-6xl"
-              animate={{ y: [0, -7, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ filter: 'drop-shadow(0 12px 28px rgba(248,152,32,0.35))' }}
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ filter: 'drop-shadow(0 20px 44px rgba(248,152,32,0.42))' }}
             >
-              ☕
+              <Logo size={76} />
             </motion.div>
-            <div className="text-xl font-extrabold tracking-tight">JavaPrepTracker</div>
-            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted">
+            <div className="text-[19px] font-extrabold tracking-tighter2">JavaPrepTracker</div>
+            <div className="-mt-2 text-[9.5px] font-semibold uppercase tracking-[0.2em] text-muted">
               Java DSA · Placement Prep
             </div>
             <div className="mt-1 h-[3px] w-32 overflow-hidden rounded-full bg-white/[0.08]">
