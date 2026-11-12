@@ -7,6 +7,12 @@ the first load.
 > No backend. No login. No cloud. Every task, problem, concept and study session lives in
 > IndexedDB on your device.
 
+### 🔗 Live app
+
+**https://javapreptracker.vercel.app** — open this on your Android phone, wait for the first
+load, then Chrome **⋮ → Add to Home screen**. The compact card lives at
+**https://javapreptracker.vercel.app/widget**.
+
 ---
 
 ## ✨ Features
