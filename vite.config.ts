@@ -41,12 +41,10 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        // Navigations are handled by the precache + navigateFallback route above, so a
+        // redeploy swaps in the new index.html in the same install that swaps the assets
+        // (a CacheFirst navigation route here would pin stale HTML / dead asset hashes).
         runtimeCaching: [
-          {
-            urlPattern: ({ request }) => request.mode === 'navigate',
-            handler: 'CacheFirst',
-            options: { cacheName: 'javaprep-pages', expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 60 } },
-          },
           {
             urlPattern: ({ request }) => ['style', 'script', 'worker', 'font', 'image'].includes(request.destination),
             handler: 'CacheFirst',
