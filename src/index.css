@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --nav-h: 64px;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-base text-ink font-sans antialiased;
+    overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Prevent iOS auto-zoom on focus, keep inputs touch-friendly */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-semibold tracking-tight;
+  }
+
+  ::selection {
+    background: rgba(0, 212, 170, 0.3);
+  }
+
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl bg-surface shadow-card border border-white/[0.04];
+  }
+
+  .card-pad {
+    @apply p-4;
+  }
+
+  .tap {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center select-none;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 min-h-[44px] font-semibold text-sm
+      transition-transform active:scale-[0.97] disabled:opacity-40 disabled:active:scale-100;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent text-[#04231d] hover:brightness-110;
+  }
+
+  .btn-ghost {
+    @apply btn bg-white/[0.06] text-ink hover:bg-white/[0.1];
+  }
+
+  .btn-java {
+    @apply btn bg-java/15 text-java border border-java/30 hover:bg-java/25;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold leading-none;
+  }
+
+  .field {
+    @apply w-full rounded-xl bg-white/[0.05] border border-white/[0.08] px-3.5 py-3 text-[15px]
+      text-ink placeholder:text-muted/70 outline-none
+      focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition;
+  }
+
+  .label {
+    @apply block text-[11px] font-semibold uppercase tracking-wider text-muted mb-1.5;
+  }
+
+  .divider {
+    @apply h-px w-full bg-white/[0.06];
+  }
+
+  .glass-nav {
+    background: rgba(22, 33, 62, 0.86);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .code-block {
+    @apply font-mono text-[12.5px] leading-relaxed bg-[#0d1425] rounded-xl p-3.5 overflow-x-auto
+      border border-white/[0.05] text-[#c9d6ea];
+  }
+}
+
+/* Recharts tooltip polish */
+.recharts-default-tooltip {
+  background: #16213e !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.8) !important;
+  font-size: 12px !important;
+}
+.recharts-tooltip-label {
+  color: #94a3b8 !important;
+  font-weight: 600 !important;
+  margin-bottom: 2px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

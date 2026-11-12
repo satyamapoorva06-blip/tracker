@@ -1,0 +1,17 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.env
+.env.*
+!.env.example
+.vercel
+*.log
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# TS build info
+*.tsbuildinfo
