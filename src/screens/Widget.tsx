@@ -12,6 +12,7 @@ export default function Widget() {
   const tasks = useStore((s) => s.tasks)
   const sessions = useStore((s) => s.sessions)
   const streak = useStreak()
+  const ready = useStore((s) => s.ready)
 
   const key = todayKey()
   const stats = useMemo(() => problemStats(problems), [problems])
@@ -23,30 +24,30 @@ export default function Widget() {
     {
       icon: '☕',
       label: 'Java DSA',
-      value: `${stats.total}/${TOTAL_TARGET}`,
+      value: ready ? `${stats.total}/${TOTAL_TARGET}` : '—',
       color: '#f89820',
-      bar: pct(stats.total, TOTAL_TARGET),
+      bar: ready ? pct(stats.total, TOTAL_TARGET) : 0,
     },
     {
       icon: <Flame size={13} className="text-java" />,
       label: 'Streak',
-      value: `${streak.current} days`,
+      value: ready ? `${streak.current} days` : '—',
       color: '#ffa500',
-      bar: Math.min(100, (streak.current / Math.max(streak.longest, 1)) * 100),
+      bar: ready ? Math.min(100, (streak.current / Math.max(streak.longest, 1)) * 100) : 0,
     },
     {
       icon: <CheckCircle2 size={13} className="text-accent" />,
       label: 'Today',
-      value: `${done}/${dayTasks.length} tasks`,
+      value: ready ? `${done}/${dayTasks.length} tasks` : '—',
       color: '#00d4aa',
-      bar: pct(done, Math.max(dayTasks.length, 1)),
+      bar: ready ? pct(done, Math.max(dayTasks.length, 1)) : 0,
     },
     {
       icon: <Timer size={13} className="text-[#7c9bff]" />,
       label: 'Studied',
-      value: hm(studied),
+      value: ready ? hm(studied) : '—',
       color: '#7c9bff',
-      bar: Math.min(100, (studied / 240) * 100),
+      bar: ready ? Math.min(100, (studied / 240) * 100) : 0,
     },
   ]
 
