@@ -392,6 +392,14 @@ export const useStore = create<Store>()(
     {
       name: 'javaprep-settings',
       partialize: (s) => ({ settings: s.settings }),
+      // Deep-merge defaults so older persisted settings never miss new keys.
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<Store>
+        return {
+          ...current,
+          settings: { ...current.settings, ...(p.settings ?? {}) },
+        }
+      },
     },
   ),
 )
