@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {fallbackClassify,classify} from './engine.js';
+const email=(subject,body)=>({subject,messages:[{body}]});
+test('routes business approval to the client',()=>{assert.equal(fallbackClassify(email('Partnership proposal','Please approve the proposal')).classification,'Client to Reply')});
+test('recognizes informational messages',()=>{assert.equal(fallbackClassify(email('Weekly newsletter','No reply needed')).classification,'No Reply Needed')});
+test('routes scheduling to the assistant',()=>{assert.equal(fallbackClassify(email('Schedule a meeting','Could you arrange a call next week?')).classification,'Assistant to Reply')});
+test('falls back safely when provider is unavailable',async()=>{const old=process.env.OPENAI_API_KEY, base=process.env.OPENAI_BASE_URL;process.env.OPENAI_API_KEY='test';process.env.OPENAI_BASE_URL='http://127.0.0.1:1';const result=await classify(email('Approval','Please approve the budget'));assert.equal(result.source,'Rules-based fallback');if(old===undefined)delete process.env.OPENAI_API_KEY;else process.env.OPENAI_API_KEY=old;if(base===undefined)delete process.env.OPENAI_BASE_URL;else process.env.OPENAI_BASE_URL=base});
